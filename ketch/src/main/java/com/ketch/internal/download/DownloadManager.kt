@@ -253,7 +253,8 @@ internal class DownloadManager(
                     context = context,
                     notificationConfig = notificationConfig,
                     requestId = id,
-                    fileName = downloadEntity.fileName
+                    fileName = downloadEntity.tag,
+
                 ).sendDownloadCancelledNotification()
             }
         }
