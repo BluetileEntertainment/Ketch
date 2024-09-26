@@ -57,13 +57,14 @@ internal class DownloadWorker(
         val dirPath = downloadRequest.path
         val fileName = downloadRequest.fileName
         val headers = downloadRequest.headers
+        val tag = downloadRequest.tag
 
         if (notificationConfig.enabled) {
             downloadNotificationManager = DownloadNotificationManager(
                 context = context,
                 notificationConfig = notificationConfig,
                 requestId = id,
-                fileName = fileName
+                fileName = tag
             )
         }
 
