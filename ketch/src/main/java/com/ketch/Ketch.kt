@@ -147,6 +147,8 @@ class Ketch private constructor(
      * @param tag Optional tag for each download to group the download into category
      * @param metaData Optional metaData set for adding any extra download info
      * @param headers Optional headers sent when making api call for file download
+     * @param notificationTitle Optional notification title
+     * @param notificationParameter Optional notification parameter
      * @return Unique Download ID associated with current download
      */
     fun download(
@@ -155,6 +157,8 @@ class Ketch private constructor(
         fileName: String = FileUtil.getFileNameFromUrl(url),
         tag: String = "",
         metaData: String = "",
+        notificationTitle: String = "",
+        notificationParameter: String = "",
         headers: HashMap<String, String> = hashMapOf()
     ): Int {
 
@@ -168,7 +172,9 @@ class Ketch private constructor(
             fileName = fileName,
             tag = tag,
             headers = headers,
-            metaData = metaData
+            metaData = metaData,
+            notificationTitle = notificationTitle,
+            notificationParameter = notificationParameter
         )
         downloadManager.downloadAsync(downloadRequest)
         return downloadRequest.id

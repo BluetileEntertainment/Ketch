@@ -24,6 +24,8 @@ data class DownloadModel(
     val url: String,
     val path: String,
     val fileName: String,
+    val notificationTitle: String,
+    val notificationParameter: String,
     val tag: String,
     val id: Int,
     val headers: HashMap<String, String>,

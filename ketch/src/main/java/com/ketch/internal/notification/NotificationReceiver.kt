@@ -105,6 +105,8 @@ internal class NotificationReceiver : BroadcastReceiver() {
             val currentProgress = intent.extras?.getInt(DownloadConst.KEY_PROGRESS) ?: 0
             val requestId =
                 intent.extras?.getInt(DownloadConst.KEY_REQUEST_ID) ?: -1
+            val parameter =
+                intent.extras?.getString(DownloadConst.KEY_PARAMETER) ?: ""
             val totalLength = intent.extras?.getLong(DownloadConst.KEY_LENGTH)
                 ?: DownloadConst.DEFAULT_VALUE_LENGTH
 
@@ -123,6 +125,7 @@ internal class NotificationReceiver : BroadcastReceiver() {
             val intentOpen = context.packageManager.getLaunchIntentForPackage(context.packageName)
             intentOpen?.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             intentOpen?.putExtra(DownloadConst.KEY_REQUEST_ID, requestId)
+            intentOpen?.putExtra(DownloadConst.KEY_PARAMETER, parameter)
             val pendingIntentOpen =
                 PendingIntent.getActivity(
                     context.applicationContext,
@@ -164,6 +167,7 @@ internal class NotificationReceiver : BroadcastReceiver() {
             }
             intentCancel.putExtra(NotificationConst.KEY_NOTIFICATION_ID, notificationId)
             intentCancel.putExtra(DownloadConst.KEY_REQUEST_ID, requestId)
+
             val pendingIntentCancel = PendingIntent.getBroadcast(
                 context.applicationContext,
                 notificationId,

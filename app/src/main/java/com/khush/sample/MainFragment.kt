@@ -100,7 +100,9 @@ class MainFragment : Fragment() {
                     fileName = downloadItem.fileName,
                     path = downloadItem.path,
                     tag = downloadItem.tag,
-                    metaData = downloadItem.metaData
+                    metaData = downloadItem.metaData,
+                    notificationTitle = downloadItem.notificationTitle,
+                    notificationParameter = downloadItem.notificationParameter
                 )
             }
 
@@ -136,103 +138,71 @@ class MainFragment : Fragment() {
         fragmentMainBinding.bt1.text = "Video 1"
         fragmentMainBinding.bt1.setOnClickListener {
             ketch.download(
-                url = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+                url = "https://persian17.asset.aparat.com/aparat-video/8f259810da5016b0156e8d5bb376579660658475-480p.mp4?wmsAuthSign=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbiI6ImE2OThkNDVkZTFjOWU5YzgxMTM4ZDc0NzJkMTg0NTk1IiwiZXhwIjoxNzI3NzE3MzM3LCJpc3MiOiJTYWJhIElkZWEgR1NJRyJ9.1UHDqwYOuAiD6fRBZfOYXISVLaVaEYHJ-pT0v5wB594",
                 path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).path,
                 fileName = "Sample_Video_1.mp4",
                 tag = "Video",
-                metaData = "158"
+                metaData = "158",
+                notificationTitle = "Sample Video 1",
+                notificationParameter="REZA"
+
             )
         }
 
         fragmentMainBinding.bt2.text = "Video 2"
         fragmentMainBinding.bt2.setOnClickListener {
             ketch.download(
-                url = "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4",
+                url = "https://persian17.asset.aparat.com/aparat-video/8f259810da5016b0156e8d5bb376579660658475-480p.mp4?wmsAuthSign=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbiI6ImE2OThkNDVkZTFjOWU5YzgxMTM4ZDc0NzJkMTg0NTk1IiwiZXhwIjoxNzI3NzE3MzM3LCJpc3MiOiJTYWJhIElkZWEgR1NJRyJ9.1UHDqwYOuAiD6fRBZfOYXISVLaVaEYHJ-pT0v5wB594",
                 path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).path,
                 fileName = "Sample_Video_2.mp4",
                 tag = "Video",
-                metaData = "169"
+                metaData = "169",
+                notificationTitle = "Sample Pdf 1",
+                notificationParameter="REZA"
             )
         }
 
         fragmentMainBinding.bt3.text = "Video 3"
         fragmentMainBinding.bt3.setOnClickListener {
             ketch.download(
-                url = "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/SubaruOutbackOnStreetAndDirt.mp4",
+                url = "https://persian17.asset.aparat.com/aparat-video/8f259810da5016b0156e8d5bb376579660658475-480p.mp4?wmsAuthSign=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbiI6ImE2OThkNDVkZTFjOWU5YzgxMTM4ZDc0NzJkMTg0NTk1IiwiZXhwIjoxNzI3NzE3MzM3LCJpc3MiOiJTYWJhIElkZWEgR1NJRyJ9.1UHDqwYOuAiD6fRBZfOYXISVLaVaEYHJ-pT0v5wB594",
                 path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).path,
                 fileName = "Sample_Video_3.mp4",
                 tag = "Video",
-                metaData = "48"
+                metaData = "48",
+                notificationTitle = "Sample Pdf 1",
+                notificationParameter="REZA"
             )
         }
 
         fragmentMainBinding.bt4.text = "Image 1"
         fragmentMainBinding.bt4.setOnClickListener {
             ketch.download(
-                url = "https://picsum.photos/200/300",
+                url = "https://persian17.asset.aparat.com/aparat-video/8f259810da5016b0156e8d5bb376579660658475-480p.mp4?wmsAuthSign=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbiI6ImE2OThkNDVkZTFjOWU5YzgxMTM4ZDc0NzJkMTg0NTk1IiwiZXhwIjoxNzI3NzE3MzM3LCJpc3MiOiJTYWJhIElkZWEgR1NJRyJ9.1UHDqwYOuAiD6fRBZfOYXISVLaVaEYHJ-pT0v5wB594",
                 path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).path,
                 fileName = "Sample_Image_1.jpg",
                 tag = "Document",
-                metaData = "1"
+                metaData = "1",
+                notificationTitle = "Sample Pdf 1",
+                notificationParameter="REZA"
             )
         }
 
         fragmentMainBinding.bt5.text = "Pdf 1"
         fragmentMainBinding.bt5.setOnClickListener {
             ketch.download(
-                url = "https://sample-videos.com/pdf/Sample-pdf-5mb.pdf",
+                url = "https://persian17.asset.aparat.com/aparat-video/8f259810da5016b0156e8d5bb376579660658475-480p.mp4?wmsAuthSign=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbiI6ImE2OThkNDVkZTFjOWU5YzgxMTM4ZDc0NzJkMTg0NTk1IiwiZXhwIjoxNzI3NzE3MzM3LCJpc3MiOiJTYWJhIElkZWEgR1NJRyJ9.1UHDqwYOuAiD6fRBZfOYXISVLaVaEYHJ-pT0v5wB594",
                 path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).path,
                 fileName = "Sample_Pdf_1.pdf",
                 tag = "Document",
-                metaData = "5"
+                metaData = "5",
+                notificationTitle = "Sample Pdf 1",
+                        notificationParameter="REZA"
             )
         }
 
         fragmentMainBinding.bt6.text = "Multiple"
-        fragmentMainBinding.bt6.setOnClickListener {
-            ketch.download(
-                url = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
-                path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).path,
-                fileName = "Sample_Video_1.mp4",
-                tag = "Video",
-                metaData = "158"
-            )
-            ketch.download(
-                url = "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4",
-                path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).path,
-                fileName = "Sample_Video_2.mp4",
-                tag = "Video",
-                metaData = "169"
-            )
-            ketch.download(
-                url = "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/SubaruOutbackOnStreetAndDirt.mp4",
-                path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).path,
-                fileName = "Sample_Video_3.mp4",
-                tag = "Video",
-                metaData = "48"
-            )
-            ketch.download(
-                url = "https://sample-videos.com/video321/mp4/720/big_buck_bunny_720p_30mb.mp4",
-                path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).path,
-                fileName = "Sample_Video_4.mp4",
-                tag = "Video",
-                metaData = "30"
-            )
-            ketch.download(
-                url = "https://picsum.photos/200/300",
-                path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).path,
-                fileName = "Sample_Image_1.jpg",
-                tag = "Document",
-                metaData = "1"
-            )
-            ketch.download(
-                url = "https://sample-videos.com/pdf/Sample-pdf-5mb.pdf",
-                path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).path,
-                fileName = "Sample_Pdf_1.pdf",
-                tag = "Document",
-                metaData = "5"
-            )
-        }
+
     }
 
     private fun observer() {

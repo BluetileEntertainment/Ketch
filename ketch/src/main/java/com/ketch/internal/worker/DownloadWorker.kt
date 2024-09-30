@@ -58,13 +58,16 @@ internal class DownloadWorker(
         val fileName = downloadRequest.fileName
         val headers = downloadRequest.headers
         val tag = downloadRequest.tag
+        val notificationTitle = downloadRequest.notificationTitle
+        val notificationParameter = downloadRequest.notificationParameter
 
         if (notificationConfig.enabled) {
             downloadNotificationManager = DownloadNotificationManager(
                 context = context,
                 notificationConfig = notificationConfig,
                 requestId = id,
-                fileName = tag
+                fileName = notificationTitle.ifEmpty { fileName },
+                notificationParameter = notificationParameter
             )
         }
 
@@ -163,7 +166,7 @@ internal class DownloadWorker(
                 lastModified = System.currentTimeMillis()
             )?.let { downloadDao.update(it) }
 
-            downloadNotificationManager?.sendDownloadSuccessNotification(totalLength)
+            downloadNotificationManager?.sendDownloadSuccessNotification(totalLength,notificationParameter)
             Result.success()
         } catch (e: Exception) {
             GlobalScope.launch {

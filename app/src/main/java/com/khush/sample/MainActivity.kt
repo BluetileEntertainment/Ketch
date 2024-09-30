@@ -20,7 +20,12 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Log.i("Testing", "RequestId " + intent.extras?.getInt("key_request_id"))
+        // Retrieve the notificationParameter when the activity is created
+        intent?.extras?.getString("parameter")?.let { notificationParameter ->
+            // Use the notificationParameter (show in Toast, log, etc.)
+            Log.i("Testing", "Parameter $notificationParameter")
+
+        }
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)

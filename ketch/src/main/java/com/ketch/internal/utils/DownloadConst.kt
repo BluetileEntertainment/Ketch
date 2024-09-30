@@ -14,6 +14,7 @@ internal object DownloadConst {
     const val KEY_LENGTH = "key_length"
     const val DEFAULT_VALUE_LENGTH = 0L
     const val KEY_REQUEST_ID = "key_request_id"
+    const val KEY_PARAMETER = "parameter"
     const val KEY_DOWNLOAD_REQUEST = "key_download_request"
     const val KEY_DOWNLOAD_CONFIG = "key_download_config"
     const val KEY_NOTIFICATION_CONFIG = "key_notification_config"

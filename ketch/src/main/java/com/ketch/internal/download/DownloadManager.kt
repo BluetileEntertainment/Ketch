@@ -190,6 +190,8 @@ internal class DownloadManager(
                     tag = downloadRequest.tag,
                     id = downloadRequest.id,
                     headersJson = WorkUtil.hashMapToJson(downloadRequest.headers),
+                    notificationParameter = downloadRequest.notificationParameter,
+                    notificationTitle = downloadRequest.notificationTitle,
                     timeQueued = System.currentTimeMillis(),
                     status = Status.QUEUED.toString(),
                     uuid = downloadWorkRequest.id.toString(),
@@ -225,7 +227,9 @@ internal class DownloadManager(
                     tag = downloadEntity.tag,
                     id = downloadEntity.id,
                     headers = WorkUtil.jsonToHashMap(downloadEntity.headersJson),
-                    metaData = downloadEntity.metaData
+                    metaData = downloadEntity.metaData,
+                    notificationParameter = downloadEntity.notificationParameter,
+                    notificationTitle = downloadEntity.notificationTitle
                 )
             )
         }
@@ -254,6 +258,8 @@ internal class DownloadManager(
                     notificationConfig = notificationConfig,
                     requestId = id,
                     fileName = downloadEntity.tag,
+                    notificationParameter = downloadEntity.notificationParameter,
+
 
                 ).sendDownloadCancelledNotification()
             }
@@ -291,7 +297,9 @@ internal class DownloadManager(
                     tag = downloadEntity.tag,
                     id = downloadEntity.id,
                     headers = WorkUtil.jsonToHashMap(downloadEntity.headersJson),
-                    metaData = downloadEntity.metaData
+                    metaData = downloadEntity.metaData,
+                    notificationParameter = downloadEntity.notificationParameter,
+                    notificationTitle = downloadEntity.notificationTitle
                 )
             )
         }

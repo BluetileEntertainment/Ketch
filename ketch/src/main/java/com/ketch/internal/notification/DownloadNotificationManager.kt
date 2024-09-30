@@ -34,7 +34,9 @@ internal class DownloadNotificationManager(
     private val context: Context,
     private val notificationConfig: NotificationConfig,
     private val requestId: Int,
-    private val fileName: String
+    private val fileName: String,
+    private val notificationParameter: String
+
 ) {
 
     private var foregroundInfo: ForegroundInfo? = null
@@ -88,6 +90,7 @@ internal class DownloadNotificationManager(
             val intentOpen = context.packageManager.getLaunchIntentForPackage(context.packageName)
             intentOpen?.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             intentOpen?.putExtra(DownloadConst.KEY_REQUEST_ID, requestId)
+            intentOpen?.putExtra(DownloadConst.KEY_PARAMETER, notificationParameter)
             val pendingIntentOpen =
                 PendingIntent.getActivity(
                     context.applicationContext,
@@ -196,7 +199,7 @@ internal class DownloadNotificationManager(
      *
      * @param totalLength
      */
-    fun sendDownloadSuccessNotification(totalLength: Long) {
+    fun sendDownloadSuccessNotification(totalLength: Long,notificationParameter: String) {
         context.applicationContext.sendBroadcast(
             Intent(context, NotificationReceiver::class.java).apply {
                 putExtra(
@@ -218,6 +221,7 @@ internal class DownloadNotificationManager(
                 putExtra(DownloadConst.KEY_FILE_NAME, fileName)
                 putExtra(DownloadConst.KEY_LENGTH, totalLength)
                 putExtra(DownloadConst.KEY_REQUEST_ID, requestId)
+                putExtra(DownloadConst.KEY_PARAMETER, notificationParameter)
                 putExtra(NotificationConst.KEY_NOTIFICATION_ID, notificationId)
                 action = NotificationConst.ACTION_DOWNLOAD_COMPLETED
             }

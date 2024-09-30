@@ -21,5 +21,7 @@ internal fun DownloadEntity.toDownloadModel() =
         lastModified = lastModified,
         eTag = eTag,
         metaData = metaData,
-        failureReason = failureReason
+        failureReason = failureReason,
+        notificationTitle = notificationTitle,
+        notificationParameter = notificationParameter
     )
