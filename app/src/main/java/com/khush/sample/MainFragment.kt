@@ -138,13 +138,13 @@ class MainFragment : Fragment() {
         fragmentMainBinding.bt1.text = "Video 1"
         fragmentMainBinding.bt1.setOnClickListener {
             ketch.download(
-                url = "https://persian17.asset.aparat.com/aparat-video/8f259810da5016b0156e8d5bb376579660658475-480p.mp4?wmsAuthSign=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbiI6ImE2OThkNDVkZTFjOWU5YzgxMTM4ZDc0NzJkMTg0NTk1IiwiZXhwIjoxNzI3NzE3MzM3LCJpc3MiOiJTYWJhIElkZWEgR1NJRyJ9.1UHDqwYOuAiD6fRBZfOYXISVLaVaEYHJ-pT0v5wB594",
+                url = "https://caspian14.asset.aparat.com/aparat-video/eb0d5927c23b97fc528ea0a3ede2cc8a58304929-144p.mp4?wmsAuthSign=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbiI6IjdiNzE3NjY0NzNiMTY3ODQ1ZjVmZTFmZDA0OGUxYTYyIiwiZXhwIjoxNzI3ODczMTEyLCJpc3MiOiJTYWJhIElkZWEgR1NJRyJ9.t118fy_v7BIHmpwqu7Io5uzBkxMaLcoxaM7sfFAnTYo",
                 path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).path,
                 fileName = "Sample_Video_1.mp4",
                 tag = "Video",
                 metaData = "158",
                 notificationTitle = "Sample Video 1",
-                notificationParameter="REZA"
+                notificationParameter="REZA2"
 
             )
         }
@@ -152,52 +152,52 @@ class MainFragment : Fragment() {
         fragmentMainBinding.bt2.text = "Video 2"
         fragmentMainBinding.bt2.setOnClickListener {
             ketch.download(
-                url = "https://persian17.asset.aparat.com/aparat-video/8f259810da5016b0156e8d5bb376579660658475-480p.mp4?wmsAuthSign=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbiI6ImE2OThkNDVkZTFjOWU5YzgxMTM4ZDc0NzJkMTg0NTk1IiwiZXhwIjoxNzI3NzE3MzM3LCJpc3MiOiJTYWJhIElkZWEgR1NJRyJ9.1UHDqwYOuAiD6fRBZfOYXISVLaVaEYHJ-pT0v5wB594",
+                url = "https://caspian14.asset.aparat.com/aparat-video/eb0d5927c23b97fc528ea0a3ede2cc8a58304929-144p.mp4?wmsAuthSign=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbiI6IjdiNzE3NjY0NzNiMTY3ODQ1ZjVmZTFmZDA0OGUxYTYyIiwiZXhwIjoxNzI3ODczMTEyLCJpc3MiOiJTYWJhIElkZWEgR1NJRyJ9.t118fy_v7BIHmpwqu7Io5uzBkxMaLcoxaM7sfFAnTYo",
                 path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).path,
                 fileName = "Sample_Video_2.mp4",
                 tag = "Video",
                 metaData = "169",
                 notificationTitle = "Sample Pdf 1",
-                notificationParameter="REZA"
+                notificationParameter="REZA1"
             )
         }
 
         fragmentMainBinding.bt3.text = "Video 3"
         fragmentMainBinding.bt3.setOnClickListener {
             ketch.download(
-                url = "https://persian17.asset.aparat.com/aparat-video/8f259810da5016b0156e8d5bb376579660658475-480p.mp4?wmsAuthSign=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbiI6ImE2OThkNDVkZTFjOWU5YzgxMTM4ZDc0NzJkMTg0NTk1IiwiZXhwIjoxNzI3NzE3MzM3LCJpc3MiOiJTYWJhIElkZWEgR1NJRyJ9.1UHDqwYOuAiD6fRBZfOYXISVLaVaEYHJ-pT0v5wB594",
+                url = "https://caspian14.asset.aparat.com/aparat-video/eb0d5927c23b97fc528ea0a3ede2cc8a58304929-144p.mp4?wmsAuthSign=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbiI6IjdiNzE3NjY0NzNiMTY3ODQ1ZjVmZTFmZDA0OGUxYTYyIiwiZXhwIjoxNzI3ODczMTEyLCJpc3MiOiJTYWJhIElkZWEgR1NJRyJ9.t118fy_v7BIHmpwqu7Io5uzBkxMaLcoxaM7sfFAnTYo",
                 path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).path,
                 fileName = "Sample_Video_3.mp4",
                 tag = "Video",
                 metaData = "48",
                 notificationTitle = "Sample Pdf 1",
-                notificationParameter="REZA"
+                notificationParameter="REZA5"
             )
         }
 
         fragmentMainBinding.bt4.text = "Image 1"
         fragmentMainBinding.bt4.setOnClickListener {
             ketch.download(
-                url = "https://persian17.asset.aparat.com/aparat-video/8f259810da5016b0156e8d5bb376579660658475-480p.mp4?wmsAuthSign=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbiI6ImE2OThkNDVkZTFjOWU5YzgxMTM4ZDc0NzJkMTg0NTk1IiwiZXhwIjoxNzI3NzE3MzM3LCJpc3MiOiJTYWJhIElkZWEgR1NJRyJ9.1UHDqwYOuAiD6fRBZfOYXISVLaVaEYHJ-pT0v5wB594",
+                url = "https://caspian14.asset.aparat.com/aparat-video/eb0d5927c23b97fc528ea0a3ede2cc8a58304929-144p.mp4?wmsAuthSign=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbiI6IjdiNzE3NjY0NzNiMTY3ODQ1ZjVmZTFmZDA0OGUxYTYyIiwiZXhwIjoxNzI3ODczMTEyLCJpc3MiOiJTYWJhIElkZWEgR1NJRyJ9.t118fy_v7BIHmpwqu7Io5uzBkxMaLcoxaM7sfFAnTYo",
                 path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).path,
                 fileName = "Sample_Image_1.jpg",
                 tag = "Document",
                 metaData = "1",
                 notificationTitle = "Sample Pdf 1",
-                notificationParameter="REZA"
+                notificationParameter="REZA6"
             )
         }
 
         fragmentMainBinding.bt5.text = "Pdf 1"
         fragmentMainBinding.bt5.setOnClickListener {
             ketch.download(
-                url = "https://persian17.asset.aparat.com/aparat-video/8f259810da5016b0156e8d5bb376579660658475-480p.mp4?wmsAuthSign=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbiI6ImE2OThkNDVkZTFjOWU5YzgxMTM4ZDc0NzJkMTg0NTk1IiwiZXhwIjoxNzI3NzE3MzM3LCJpc3MiOiJTYWJhIElkZWEgR1NJRyJ9.1UHDqwYOuAiD6fRBZfOYXISVLaVaEYHJ-pT0v5wB594",
+                url = "https://caspian14.asset.aparat.com/aparat-video/eb0d5927c23b97fc528ea0a3ede2cc8a58304929-144p.mp4?wmsAuthSign=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbiI6IjdiNzE3NjY0NzNiMTY3ODQ1ZjVmZTFmZDA0OGUxYTYyIiwiZXhwIjoxNzI3ODczMTEyLCJpc3MiOiJTYWJhIElkZWEgR1NJRyJ9.t118fy_v7BIHmpwqu7Io5uzBkxMaLcoxaM7sfFAnTYo",
                 path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).path,
                 fileName = "Sample_Pdf_1.pdf",
                 tag = "Document",
                 metaData = "5",
                 notificationTitle = "Sample Pdf 1",
-                        notificationParameter="REZA"
+                        notificationParameter="REZA8"
             )
         }
 

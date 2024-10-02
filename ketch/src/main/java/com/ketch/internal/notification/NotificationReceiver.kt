@@ -140,6 +140,8 @@ internal class NotificationReceiver : BroadcastReceiver() {
             }
             intentResume.putExtra(NotificationConst.KEY_NOTIFICATION_ID, notificationId)
             intentResume.putExtra(DownloadConst.KEY_REQUEST_ID, requestId)
+            intentOpen?.putExtra(DownloadConst.KEY_PARAMETER, parameter)
+
             val pendingIntentResume = PendingIntent.getBroadcast(
                 context.applicationContext,
                 notificationId,
@@ -153,6 +155,8 @@ internal class NotificationReceiver : BroadcastReceiver() {
             }
             intentRetry.putExtra(NotificationConst.KEY_NOTIFICATION_ID, notificationId)
             intentRetry.putExtra(DownloadConst.KEY_REQUEST_ID, requestId)
+            intentOpen?.putExtra(DownloadConst.KEY_PARAMETER, parameter)
+
             val pendingIntentRetry =
                 PendingIntent.getBroadcast(
                     context.applicationContext,
@@ -167,6 +171,7 @@ internal class NotificationReceiver : BroadcastReceiver() {
             }
             intentCancel.putExtra(NotificationConst.KEY_NOTIFICATION_ID, notificationId)
             intentCancel.putExtra(DownloadConst.KEY_REQUEST_ID, requestId)
+            intentOpen?.putExtra(DownloadConst.KEY_PARAMETER, parameter)
 
             val pendingIntentCancel = PendingIntent.getBroadcast(
                 context.applicationContext,

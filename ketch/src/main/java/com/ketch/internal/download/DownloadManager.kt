@@ -257,7 +257,7 @@ internal class DownloadManager(
                     context = context,
                     notificationConfig = notificationConfig,
                     requestId = id,
-                    fileName = downloadEntity.tag,
+                    fileName = downloadEntity.notificationTitle,
                     notificationParameter = downloadEntity.notificationParameter,
 
 

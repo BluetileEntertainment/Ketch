@@ -104,6 +104,7 @@ internal class DownloadNotificationManager(
                 action = NotificationConst.ACTION_NOTIFICATION_DISMISSED
             }
             intentDismiss.putExtra(NotificationConst.KEY_NOTIFICATION_ID, notificationId)
+            intentDismiss.putExtra(DownloadConst.KEY_PARAMETER, notificationParameter)
             val pendingIntentDismiss = PendingIntent.getBroadcast(
                 context.applicationContext,
                 notificationId,
@@ -117,6 +118,8 @@ internal class DownloadNotificationManager(
             }
             intentPause.putExtra(NotificationConst.KEY_NOTIFICATION_ID, notificationId)
             intentPause.putExtra(DownloadConst.KEY_REQUEST_ID, requestId)
+            intentPause.putExtra(DownloadConst.KEY_PARAMETER, notificationParameter)
+
             val pendingIntentPause = PendingIntent.getBroadcast(
                 context.applicationContext,
                 notificationId,
@@ -130,6 +133,8 @@ internal class DownloadNotificationManager(
             }
             intentCancel.putExtra(NotificationConst.KEY_NOTIFICATION_ID, notificationId)
             intentCancel.putExtra(DownloadConst.KEY_REQUEST_ID, requestId)
+            intentCancel.putExtra(DownloadConst.KEY_PARAMETER, notificationParameter)
+
             val pendingIntentCancel = PendingIntent.getBroadcast(
                 context.applicationContext,
                 notificationId,
@@ -254,7 +259,10 @@ internal class DownloadNotificationManager(
                 )
                 putExtra(DownloadConst.KEY_FILE_NAME, fileName)
                 putExtra(DownloadConst.KEY_REQUEST_ID, requestId)
+                putExtra(DownloadConst.KEY_PARAMETER, notificationParameter)
                 putExtra(NotificationConst.KEY_NOTIFICATION_ID, notificationId)
+                putExtra(NotificationConst.KEY_NOTIFICATION_ID, notificationId)
+
                 putExtra(DownloadConst.KEY_PROGRESS, currentProgress)
                 action = NotificationConst.ACTION_DOWNLOAD_FAILED
             }
@@ -285,6 +293,7 @@ internal class DownloadNotificationManager(
                     notificationConfig.smallIcon
                 )
                 putExtra(DownloadConst.KEY_FILE_NAME, fileName)
+                putExtra(DownloadConst.KEY_PARAMETER, notificationParameter)
                 putExtra(DownloadConst.KEY_REQUEST_ID, requestId)
                 putExtra(NotificationConst.KEY_NOTIFICATION_ID, notificationId)
                 action = NotificationConst.ACTION_DOWNLOAD_CANCELLED
@@ -317,6 +326,7 @@ internal class DownloadNotificationManager(
                     notificationConfig.smallIcon
                 )
                 putExtra(DownloadConst.KEY_FILE_NAME, fileName)
+                putExtra(DownloadConst.KEY_PARAMETER, notificationParameter)
                 putExtra(DownloadConst.KEY_PROGRESS, currentProgress)
                 putExtra(DownloadConst.KEY_REQUEST_ID, requestId)
                 putExtra(NotificationConst.KEY_NOTIFICATION_ID, notificationId)
