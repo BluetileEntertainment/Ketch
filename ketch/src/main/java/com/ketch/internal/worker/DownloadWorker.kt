@@ -18,6 +18,7 @@ import com.ketch.internal.utils.WorkUtil
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import java.io.File
 
 internal class DownloadWorker(
     private val context: Context,
@@ -55,7 +56,8 @@ internal class DownloadWorker(
         val id = downloadRequest.id
         val url = downloadRequest.url
         val dirPath = downloadRequest.path
-        val fileName = downloadRequest.fileName
+        val originalFileName = downloadRequest.url.split("/").last()
+        val fileName =FileUtil.changeFileExtensionToBt(downloadRequest.fileName)
         val headers = downloadRequest.headers
         val tag = downloadRequest.tag
         val notificationTitle = downloadRequest.notificationTitle
@@ -166,7 +168,11 @@ internal class DownloadWorker(
                 lastModified = System.currentTimeMillis()
             )?.let { downloadDao.update(it) }
 
+            //rename to original file name
+            FileUtil.renameFile(tempPath = fileName,originalFileName, downloadsDirectory = File(dirPath))
             downloadNotificationManager?.sendDownloadSuccessNotification(totalLength,notificationParameter)
+
+
             Result.success()
         } catch (e: Exception) {
             GlobalScope.launch {

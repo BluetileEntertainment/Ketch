@@ -43,4 +43,41 @@ internal object FileUtil {
             file.delete()
         }
     }
+
+    fun renameFile(tempPath: String,originalFileName: String,downloadsDirectory: File): Boolean {
+        val oldFile = File(downloadsDirectory, tempPath)
+
+        // Check if the file exists
+        if (oldFile.exists()) {
+            // Create a new file path without the ".bt" extension
+            val newFile = File(downloadsDirectory,originalFileName)
+
+
+            // Rename the file
+            val renamed = oldFile.renameTo(newFile)
+
+            println("File renamed successfully: ${newFile.path}")
+
+            if (renamed) {
+                println("File renamed successfully: ${newFile.path}")
+                return true
+            } else {
+                println("Failed to rename the file $oldFile  to $newFile")
+            }
+        } else {
+            println("File does not exist")
+        }
+        return false
+    }
+
+    fun changeFileExtensionToBt(fileName: String): String {
+
+        // Find the current extension and replace it with the new extension
+        return if (fileName.contains(".")) {
+            fileName.substringBeforeLast(".") + ".bt" // Replace the last dot with ".bt"
+        } else {
+            "$fileName.bt"  // If no extension, just add the new one
+        }
+    }
+
 }

@@ -96,6 +96,9 @@ internal class DownloadManager(
                             }
 
                             WorkInfo.State.SUCCEEDED -> {
+
+
+
                                 val downloadEntity = findDownloadEntityFromUUID(workInfo.id)
                                 logger.log(
                                     msg = "Download Success. FileName: ${downloadEntity?.fileName}, " +
@@ -504,5 +507,6 @@ internal class DownloadManager(
             entity.toDownloadModel()
         }
     }
+
 
 }

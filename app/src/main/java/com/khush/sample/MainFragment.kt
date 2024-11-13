@@ -138,7 +138,7 @@ class MainFragment : Fragment() {
         fragmentMainBinding.bt1.text = "Video 1"
         fragmentMainBinding.bt1.setOnClickListener {
             ketch.download(
-                url = "https://caspian14.asset.aparat.com/aparat-video/eb0d5927c23b97fc528ea0a3ede2cc8a58304929-144p.mp4?wmsAuthSign=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbiI6IjdiNzE3NjY0NzNiMTY3ODQ1ZjVmZTFmZDA0OGUxYTYyIiwiZXhwIjoxNzI3ODczMTEyLCJpc3MiOiJTYWJhIElkZWEgR1NJRyJ9.t118fy_v7BIHmpwqu7Io5uzBkxMaLcoxaM7sfFAnTYo",
+                url = "https://file-examples.com/storage/fe9566cb7d67345489a5a97/2017/04/file_example_MP4_640_3MG.mp4",
                 path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).path,
                 fileName = "Sample_Video_1.mp4",
                 tag = "Video",
@@ -152,7 +152,7 @@ class MainFragment : Fragment() {
         fragmentMainBinding.bt2.text = "Video 2"
         fragmentMainBinding.bt2.setOnClickListener {
             ketch.download(
-                url = "https://caspian14.asset.aparat.com/aparat-video/eb0d5927c23b97fc528ea0a3ede2cc8a58304929-144p.mp4?wmsAuthSign=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbiI6IjdiNzE3NjY0NzNiMTY3ODQ1ZjVmZTFmZDA0OGUxYTYyIiwiZXhwIjoxNzI3ODczMTEyLCJpc3MiOiJTYWJhIElkZWEgR1NJRyJ9.t118fy_v7BIHmpwqu7Io5uzBkxMaLcoxaM7sfFAnTYo",
+                url = "https://file-examples.com/storage/fec85039006734629a992d7/2017/04/file_example_MP4_1280_10MG.mp4",
                 path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).path,
                 fileName = "Sample_Video_2.mp4",
                 tag = "Video",
@@ -165,7 +165,7 @@ class MainFragment : Fragment() {
         fragmentMainBinding.bt3.text = "Video 3"
         fragmentMainBinding.bt3.setOnClickListener {
             ketch.download(
-                url = "https://caspian14.asset.aparat.com/aparat-video/eb0d5927c23b97fc528ea0a3ede2cc8a58304929-144p.mp4?wmsAuthSign=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbiI6IjdiNzE3NjY0NzNiMTY3ODQ1ZjVmZTFmZDA0OGUxYTYyIiwiZXhwIjoxNzI3ODczMTEyLCJpc3MiOiJTYWJhIElkZWEgR1NJRyJ9.t118fy_v7BIHmpwqu7Io5uzBkxMaLcoxaM7sfFAnTYo",
+                url = "https://file-examples.com/storage/fec85039006734629a992d7/2017/04/file_example_MP4_1280_10MG.mp4",
                 path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).path,
                 fileName = "Sample_Video_3.mp4",
                 tag = "Video",
