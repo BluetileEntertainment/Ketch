@@ -4,6 +4,7 @@ import com.ketch.internal.network.DownloadService
 import com.ketch.internal.utils.DownloadConst
 import com.ketch.internal.utils.FileUtil
 import java.io.File
+import java.io.BufferedOutputStream
 import java.io.FileOutputStream
 import java.io.IOException
 
@@ -18,6 +19,7 @@ internal class DownloadTask(
         private const val VALUE_200 = 200
         private const val VALUE_299 = 299
         private const val TIME_TO_TRIGGER_PROGRESS = 1500
+        private const val IO_BUFFER_SIZE = 256 * 1024
     }
 
     suspend fun download(
@@ -69,7 +71,7 @@ internal class DownloadTask(
         val out = FileOutputStream(file, true)
 
         responseBody.byteStream().use { inputStream ->
-            out.use { outputStream ->
+            BufferedOutputStream(out, IO_BUFFER_SIZE).use { outputStream ->
 
                 if (rangeStart != 0L) {
                     progressBytes = rangeStart
@@ -77,7 +79,7 @@ internal class DownloadTask(
 
                 onStart.invoke(totalBytes)
 
-                val buffer = ByteArray(DEFAULT_BUFFER_SIZE)
+                val buffer = ByteArray(IO_BUFFER_SIZE)
                 var bytes = inputStream.read(buffer)
                 var tempBytes = 0L
                 var progressInvokeTime = System.currentTimeMillis()
