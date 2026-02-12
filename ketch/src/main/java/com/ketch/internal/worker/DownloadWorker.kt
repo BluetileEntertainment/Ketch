@@ -29,7 +29,7 @@ internal class DownloadWorker(
     companion object {
         private const val MAX_PERCENT = 100
         private const val MIN_PROGRESS_PERCENT_DELTA = 1
-        private const val MIN_PROGRESS_BYTES_DELTA = 5 * 1024 * 1024L
+        private const val MIN_PROGRESS_BYTES_DELTA = 10 * 1024 * 1024L
         private const val DEFAULT_USER_AGENT =
             "Mozilla/5.0 (Linux; Android 14) AppleWebKit/537.36 (KHTML, like Gecko) " +
                 "Chrome/124.0.0.0 Mobile Safari/537.36"

@@ -18,8 +18,8 @@ internal class DownloadTask(
     companion object {
         private const val VALUE_200 = 200
         private const val VALUE_299 = 299
-        private const val TIME_TO_TRIGGER_PROGRESS = 3000
-        private const val IO_BUFFER_SIZE = 1024 * 1024
+        private const val TIME_TO_TRIGGER_PROGRESS = 5000
+        private const val IO_BUFFER_SIZE = 2 * 1024 * 1024
     }
 
     suspend fun download(
