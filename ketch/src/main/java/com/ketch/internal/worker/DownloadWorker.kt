@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import androidx.work.workDataOf
+import com.ketch.DownloadConfig
 import com.ketch.Status
 import com.ketch.internal.database.DatabaseInstance
 import com.ketch.internal.download.DownloadTask
@@ -29,7 +30,6 @@ internal class DownloadWorker(
     companion object {
         private const val MAX_PERCENT = 100
         private const val MIN_PROGRESS_PERCENT_DELTA = 1
-        private const val MIN_PROGRESS_BYTES_DELTA = 10 * 1024 * 1024L
         private const val DEFAULT_USER_AGENT =
             "Mozilla/5.0 (Linux; Android 14) AppleWebKit/537.36 (KHTML, like Gecko) " +
                 "Chrome/124.0.0.0 Mobile Safari/537.36"
@@ -109,6 +109,7 @@ internal class DownloadWorker(
 
             var progressPercentage = 0
             var lastReportedBytes = 0L
+            var minProgressBytesDelta = downloadConfig.minProgressBytesMedium
 
             val totalLength = DownloadTask(
                 url = url,
@@ -117,7 +118,12 @@ internal class DownloadWorker(
                 downloadService = downloadService
             ).download(
                 headers = headers,
+                progressIntervalMsProvider = { totalBytes ->
+                    selectProgressTuning(downloadConfig, totalBytes).intervalMs
+                },
                 onStart = { length ->
+                    val tuning = selectProgressTuning(downloadConfig, length)
+                    minProgressBytesDelta = maxOf(1L, tuning.minBytesDelta)
 
                     downloadDao.find(id)?.copy(
                         totalBytes = length,
@@ -145,7 +151,7 @@ internal class DownloadWorker(
                         progressPercentage == 0 ||
                             progress == MAX_PERCENT ||
                             percentDelta >= MIN_PROGRESS_PERCENT_DELTA ||
-                            bytesDelta >= MIN_PROGRESS_BYTES_DELTA
+                            bytesDelta >= minProgressBytesDelta
 
                     if (shouldReport) {
 
@@ -250,6 +256,24 @@ internal class DownloadWorker(
             )
         }
 
+    }
+
+    private data class ProgressTuning(
+        val intervalMs: Long,
+        val minBytesDelta: Long
+    )
+
+    private fun selectProgressTuning(config: DownloadConfig, totalBytes: Long): ProgressTuning {
+        return when {
+            totalBytes <= config.thresholdSmallBytes ->
+                ProgressTuning(config.progressIntervalSmallMs, config.minProgressBytesSmall)
+            totalBytes <= config.thresholdMediumBytes ->
+                ProgressTuning(config.progressIntervalMediumMs, config.minProgressBytesMedium)
+            totalBytes <= config.thresholdLargeBytes ->
+                ProgressTuning(config.progressIntervalLargeMs, config.minProgressBytesLarge)
+            else ->
+                ProgressTuning(config.progressIntervalXLargeMs, config.minProgressBytesXLarge)
+        }
     }
 
 }

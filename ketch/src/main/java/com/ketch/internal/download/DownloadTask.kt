@@ -18,12 +18,13 @@ internal class DownloadTask(
     companion object {
         private const val VALUE_200 = 200
         private const val VALUE_299 = 299
-        private const val TIME_TO_TRIGGER_PROGRESS = 5000
+        private const val DEFAULT_PROGRESS_INTERVAL_MS = 5000L
         private const val IO_BUFFER_SIZE = 2 * 1024 * 1024
     }
 
     suspend fun download(
         headers: MutableMap<String, String> = mutableMapOf(),
+        progressIntervalMsProvider: (Long) -> Long = { DEFAULT_PROGRESS_INTERVAL_MS },
         onStart: suspend (Long) -> Unit,
         onProgress: suspend (Long, Long, Float) -> Unit
     ): Long {
@@ -68,6 +69,8 @@ internal class DownloadTask(
 
         totalBytes += rangeStart
 
+        val progressIntervalMs = maxOf(1L, progressIntervalMsProvider(totalBytes))
+
         val out = FileOutputStream(file, true)
 
         responseBody.byteStream().use { inputStream ->
@@ -92,9 +95,10 @@ internal class DownloadTask(
                     tempBytes += bytes
                     bytes = inputStream.read(buffer)
                     val finalTime = System.currentTimeMillis()
-                    if (finalTime - progressInvokeTime >= TIME_TO_TRIGGER_PROGRESS) {
+                    if (finalTime - progressInvokeTime >= progressIntervalMs) {
 
-                        speed = tempBytes.toFloat() / ((finalTime - progressInvokeTime).toFloat())
+                        val timeDelta = maxOf(1L, finalTime - progressInvokeTime)
+                        speed = tempBytes.toFloat() / timeDelta.toFloat()
                         tempBytes = 0L
                         progressInvokeTime = System.currentTimeMillis()
                         if (progressBytes > totalBytes) progressBytes = totalBytes
