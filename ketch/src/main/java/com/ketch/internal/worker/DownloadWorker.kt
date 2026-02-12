@@ -28,6 +28,11 @@ internal class DownloadWorker(
 
     companion object {
         private const val MAX_PERCENT = 100
+        private const val MIN_PROGRESS_PERCENT_DELTA = 1
+        private const val MIN_PROGRESS_BYTES_DELTA = 1 * 1024 * 1024L
+        private const val DEFAULT_USER_AGENT =
+            "Mozilla/5.0 (Linux; Android 14) AppleWebKit/537.36 (KHTML, like Gecko) " +
+                "Chrome/124.0.0.0 Mobile Safari/537.36"
     }
 
     private var downloadNotificationManager: DownloadNotificationManager? = null
@@ -59,6 +64,9 @@ internal class DownloadWorker(
         val originalFileName = downloadRequest.url.split("/").last()
         val fileName =FileUtil.changeFileExtensionToBt(downloadRequest.fileName)
         val headers = downloadRequest.headers
+        if (!headers.containsKey("User-Agent")) {
+            headers["User-Agent"] = DEFAULT_USER_AGENT
+        }
         val tag = downloadRequest.tag
         val notificationTitle = downloadRequest.notificationTitle
         val notificationParameter = downloadRequest.notificationParameter
@@ -100,6 +108,7 @@ internal class DownloadWorker(
             }
 
             var progressPercentage = 0
+            var lastReportedBytes = 0L
 
             val totalLength = DownloadTask(
                 url = url,
@@ -130,9 +139,18 @@ internal class DownloadWorker(
                         0
                     }
 
-                    if (progressPercentage != progress) {
+                    val percentDelta = progress - progressPercentage
+                    val bytesDelta = downloadedBytes - lastReportedBytes
+                    val shouldReport =
+                        progressPercentage == 0 ||
+                            progress == MAX_PERCENT ||
+                            percentDelta >= MIN_PROGRESS_PERCENT_DELTA ||
+                            bytesDelta >= MIN_PROGRESS_BYTES_DELTA
+
+                    if (shouldReport) {
 
                         progressPercentage = progress
+                        lastReportedBytes = downloadedBytes
 
                         downloadDao.find(id)?.copy(
                             downloadedBytes = downloadedBytes,
@@ -143,21 +161,23 @@ internal class DownloadWorker(
 
                     }
 
-                    setProgress(
-                        workDataOf(
-                            DownloadConst.KEY_STATE to DownloadConst.PROGRESS,
-                            DownloadConst.KEY_PROGRESS to progress
+                    if (shouldReport) {
+                        setProgress(
+                            workDataOf(
+                                DownloadConst.KEY_STATE to DownloadConst.PROGRESS,
+                                DownloadConst.KEY_PROGRESS to progress
+                            )
                         )
-                    )
-                    downloadNotificationManager?.sendUpdateNotification(
-                        progress = progress,
-                        speedInBPerMs = speed,
-                        length = length,
-                        update = true
-                    )?.let {
-                        setForeground(
-                            it
-                        )
+                        downloadNotificationManager?.sendUpdateNotification(
+                            progress = progress,
+                            speedInBPerMs = speed,
+                            length = length,
+                            update = true
+                        )?.let {
+                            setForeground(
+                                it
+                            )
+                        }
                     }
                 }
             )
