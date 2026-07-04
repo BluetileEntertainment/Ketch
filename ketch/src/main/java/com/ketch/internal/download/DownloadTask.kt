@@ -2,11 +2,12 @@ package com.ketch.internal.download
 
 import com.ketch.internal.network.DownloadService
 import com.ketch.internal.utils.DownloadConst
-import com.ketch.internal.utils.FileUtil
 import java.io.File
 import java.io.BufferedOutputStream
 import java.io.FileOutputStream
 import java.io.IOException
+import retrofit2.Response
+import okhttp3.ResponseBody
 
 internal class DownloadTask(
     private var url: String,
@@ -20,6 +21,8 @@ internal class DownloadTask(
         private const val VALUE_299 = 299
         private const val DEFAULT_PROGRESS_INTERVAL_MS = 5000L
         private const val IO_BUFFER_SIZE = 2 * 1024 * 1024
+        private const val HTTP_PARTIAL_CONTENT = 206
+        private const val CONTENT_RANGE_HEADER = "Content-Range"
     }
 
     suspend fun download(
@@ -41,14 +44,26 @@ internal class DownloadTask(
         }
 
         var response = downloadService.getUrl(url, headers)
-        if (response.code() == DownloadConst.HTTP_RANGE_NOT_SATISFY || isRedirection(
-                response.raw().request().url().toString()
-            )
-        ) {
-            FileUtil.deleteFileIfExists(path, fileName)
-            headers.remove(DownloadConst.RANGE_HEADER)
-            rangeStart = 0
-            response = downloadService.getUrl(url, headers)
+        if (rangeStart > 0L) {
+            when {
+                response.code() == HTTP_PARTIAL_CONTENT -> Unit
+                response.code() == DownloadConst.HTTP_RANGE_NOT_SATISFY -> {
+                    val knownTotalBytes = response.contentRangeTotalBytes()
+                    if (knownTotalBytes != null && knownTotalBytes == rangeStart) {
+                        onStart.invoke(rangeStart)
+                        onProgress.invoke(rangeStart, rangeStart, 0F)
+                        return rangeStart
+                    }
+                    throw IOException(
+                        "Server rejected resume range at $rangeStart bytes; partial file preserved"
+                    )
+                }
+                response.code() == VALUE_200 -> {
+                    throw IOException(
+                        "Server ignored resume range at $rangeStart bytes; partial file preserved"
+                    )
+                }
+            }
         }
 
         val responseBody = response.body()
@@ -115,8 +130,9 @@ internal class DownloadTask(
 
         return totalBytes
     }
-
-    private fun isRedirection(requestUrl: String): Boolean {
-        return requestUrl != url
+    private fun Response<ResponseBody>.contentRangeTotalBytes(): Long? {
+        val contentRange = headers()[CONTENT_RANGE_HEADER] ?: return null
+        val total = contentRange.substringAfter("/", missingDelimiterValue = "")
+        return total.takeIf { it.isNotBlank() && it != "*" }?.toLongOrNull()
     }
 }

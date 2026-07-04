@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.work.Constraints
 import androidx.work.Data
 import androidx.work.ExistingWorkPolicy
+import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
@@ -34,6 +35,8 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import java.util.UUID
 
 internal class DownloadManager(
@@ -52,8 +55,20 @@ internal class DownloadManager(
     }
 
     private val scope = CoroutineScope(Dispatchers.IO + SupervisorJob() + exceptionHandler)
+    private val schedulerMutex = Mutex()
+    private val locallyScheduledWorkIds = mutableSetOf<Int>()
+    private val schedulableUserActions =
+        setOf(
+            UserAction.START.toString(),
+            UserAction.RESUME.toString(),
+            UserAction.RETRY.toString()
+        )
 
     init {
+
+        scope.launch {
+            scheduleNextQueuedDownloads()
+        }
 
         scope.launch {
             // Observe work infos, only for logging purpose
@@ -104,6 +119,7 @@ internal class DownloadManager(
                                     msg = "Download Success. FileName: ${downloadEntity?.fileName}, " +
                                             "ID: ${downloadEntity?.id}"
                                 )
+                                downloadEntity?.id?.let { scheduleAfterTerminalWork(it) }
                             }
 
                             WorkInfo.State.FAILED -> {
@@ -113,6 +129,7 @@ internal class DownloadManager(
                                             "ID: ${downloadEntity?.id}, " +
                                             "Reason: ${downloadEntity?.failureReason}"
                                 )
+                                downloadEntity?.id?.let { scheduleAfterTerminalWork(it) }
                             }
 
                             WorkInfo.State.CANCELLED -> {
@@ -128,6 +145,7 @@ internal class DownloadManager(
                                                 "ID: ${downloadEntity.id}"
                                     )
                                 }
+                                downloadEntity?.id?.let { scheduleAfterTerminalWork(it) }
                             }
 
                             WorkInfo.State.BLOCKED -> {} // no use case
@@ -137,33 +155,81 @@ internal class DownloadManager(
         }
     }
 
-    private suspend fun download(downloadRequest: DownloadRequest) {
+    private suspend fun download(
+        downloadRequest: DownloadRequest,
+        replaceExistingWork: Boolean = false
+    ) = schedulerMutex.withLock {
+        if (!canStartWork(downloadRequest.id)) {
+            upsertQueuedDownload(downloadRequest)
+            return
+        }
 
-        val inputDataBuilder = Data.Builder()
-            .putString(DownloadConst.KEY_DOWNLOAD_REQUEST, downloadRequest.toJson())
-            .putString(
-                DownloadConst.KEY_DOWNLOAD_CONFIG,
-                downloadConfig.toJson()
+        enqueueDownloadWork(
+            downloadRequest = downloadRequest,
+            replaceExistingWork = replaceExistingWork,
+            insertNewDownload = true
+        )
+    }
+
+    private suspend fun upsertQueuedDownload(downloadRequest: DownloadRequest) {
+        val existingDownload = downloadDao.find(downloadRequest.id)
+        val now = System.currentTimeMillis()
+        if (existingDownload != null) {
+            downloadDao.update(
+                existingDownload.copy(
+                    status = Status.QUEUED.toString(),
+                    uuid = "",
+                    lastModified = now
+                )
             )
-            .putString(DownloadConst.KEY_NOTIFICATION_CONFIG, notificationConfig.toJson())
+        } else {
+            downloadDao.insert(
+                DownloadEntity(
+                    url = downloadRequest.url,
+                    path = downloadRequest.path,
+                    fileName = downloadRequest.fileName,
+                    tag = downloadRequest.tag,
+                    id = downloadRequest.id,
+                    headersJson = WorkUtil.hashMapToJson(downloadRequest.headers),
+                    notificationParameter = downloadRequest.notificationParameter,
+                    notificationTitle = downloadRequest.notificationTitle,
+                    timeQueued = now,
+                    status = Status.QUEUED.toString(),
+                    uuid = "",
+                    lastModified = now,
+                    userAction = UserAction.START.toString(),
+                    metaData = downloadRequest.metaData
+                )
+            )
+            deleteFileIfExists(downloadRequest.path, downloadRequest.fileName)
+        }
+    }
 
-        val inputData = inputDataBuilder.build()
-
-        val constraints = Constraints
-            .Builder()
-            .build()
-
+    private suspend fun enqueueDownloadWork(
+        downloadRequest: DownloadRequest,
+        replaceExistingWork: Boolean,
+        insertNewDownload: Boolean
+    ) {
         val downloadWorkRequest = OneTimeWorkRequestBuilder<DownloadWorker>()
-            .setInputData(inputData)
+            .setInputData(
+                Data.Builder()
+                    .putString(DownloadConst.KEY_DOWNLOAD_REQUEST, downloadRequest.toJson())
+                    .putString(DownloadConst.KEY_DOWNLOAD_CONFIG, downloadConfig.toJson())
+                    .putString(DownloadConst.KEY_NOTIFICATION_CONFIG, notificationConfig.toJson())
+                    .build()
+            )
             .addTag(DownloadConst.TAG_DOWNLOAD)
-            .setConstraints(constraints)
+            .setConstraints(
+                Constraints.Builder()
+                    .setRequiredNetworkType(NetworkType.CONNECTED)
+                    .build()
+            )
             .build()
 
         // Checks if download id already present in database
         if (downloadDao.find(downloadRequest.id) != null) {
 
             downloadDao.find(downloadRequest.id)?.copy(
-                userAction = UserAction.START.toString(),
                 lastModified = System.currentTimeMillis()
             )?.let { downloadDao.update(it) }
 
@@ -174,9 +240,10 @@ internal class DownloadManager(
 
             if (downloadEntity != null &&
                 downloadEntity.uuid != downloadWorkRequest.id.toString() &&
-                downloadEntity.status != Status.QUEUED.toString() &&
-                downloadEntity.status != Status.PROGRESS.toString() &&
-                downloadEntity.status != Status.STARTED.toString()
+                (replaceExistingWork ||
+                    (downloadEntity.status != Status.QUEUED.toString() &&
+                        downloadEntity.status != Status.PROGRESS.toString() &&
+                        downloadEntity.status != Status.STARTED.toString()))
             ) {
                 downloadDao.find(downloadRequest.id)?.copy(
                     uuid = downloadWorkRequest.id.toString(),
@@ -185,6 +252,9 @@ internal class DownloadManager(
                 )?.let { downloadDao.update(it) }
             }
         } else {
+            if (!insertNewDownload) {
+                return
+            }
             downloadDao.insert(
                 DownloadEntity(
                     url = downloadRequest.url,
@@ -208,8 +278,80 @@ internal class DownloadManager(
 
         workManager.enqueueUniqueWork(
             downloadRequest.id.toString(),
-            ExistingWorkPolicy.KEEP,
+            if (replaceExistingWork) ExistingWorkPolicy.REPLACE else ExistingWorkPolicy.KEEP,
             downloadWorkRequest
+        )
+        locallyScheduledWorkIds.add(downloadRequest.id)
+    }
+
+    private suspend fun scheduleNextQueuedDownloads() = schedulerMutex.withLock {
+        scheduleNextQueuedDownloadsLocked()
+    }
+
+    private suspend fun scheduleAfterTerminalWork(id: Int) = schedulerMutex.withLock {
+        locallyScheduledWorkIds.remove(id)
+        scheduleNextQueuedDownloadsLocked()
+    }
+
+    private suspend fun scheduleNextQueuedDownloadsLocked() {
+        val capacity = downloadConfig.maxConcurrentDownloads - activeWorkCount()
+        if (capacity <= 0) {
+            return
+        }
+
+        downloadDao.getAllEntity()
+            .asSequence()
+            .filter { entity -> entity.status == Status.QUEUED.toString() }
+            .filter { entity -> entity.userAction in schedulableUserActions }
+            .filter { entity -> entity.id !in locallyScheduledWorkIds }
+            .filterNot { entity -> hasActiveWork(entity.id) }
+            .take(capacity)
+            .forEach { entity ->
+                val request = entity.toDownloadRequest()
+                enqueueDownloadWork(
+                    downloadRequest = request,
+                    replaceExistingWork = true,
+                    insertNewDownload = false
+                )
+            }
+    }
+
+    private suspend fun canStartWork(downloadId: Int): Boolean {
+        return activeWorkCount(excludingDownloadId = downloadId) < downloadConfig.maxConcurrentDownloads
+    }
+
+    private suspend fun activeWorkCount(excludingDownloadId: Int? = null): Int {
+        return downloadDao.getAllEntity()
+            .asSequence()
+            .filter { entity -> entity.id != excludingDownloadId }
+            .filter { entity -> entity.userAction in schedulableUserActions }
+            .filter { entity ->
+                entity.status == Status.QUEUED.toString() ||
+                    entity.status == Status.STARTED.toString() ||
+                    entity.status == Status.PROGRESS.toString()
+            }
+            .count { entity -> entity.id in locallyScheduledWorkIds || hasActiveWork(entity.id) }
+    }
+
+    private fun hasActiveWork(id: Int): Boolean {
+        return runCatching {
+            workManager.getWorkInfosForUniqueWork(id.toString())
+                .get()
+                .any { info -> info.state == WorkInfo.State.ENQUEUED || info.state == WorkInfo.State.RUNNING }
+        }.getOrDefault(false)
+    }
+
+    private fun DownloadEntity.toDownloadRequest(): DownloadRequest {
+        return DownloadRequest(
+            url = url,
+            path = path,
+            fileName = fileName,
+            tag = tag,
+            id = id,
+            headers = WorkUtil.jsonToHashMap(headersJson),
+            metaData = metaData,
+            notificationParameter = notificationParameter,
+            notificationTitle = notificationTitle
         )
     }
 
@@ -233,7 +375,8 @@ internal class DownloadManager(
                     metaData = downloadEntity.metaData,
                     notificationParameter = downloadEntity.notificationParameter,
                     notificationTitle = downloadEntity.notificationTitle
-                )
+                ),
+                replaceExistingWork = true
             )
         }
     }
@@ -244,6 +387,7 @@ internal class DownloadManager(
             downloadDao.update(
                 downloadEntity.copy(
                     userAction = UserAction.CANCEL.toString(),
+                    status = Status.CANCELLED.toString(),
                     lastModified = System.currentTimeMillis()
                 )
             )
@@ -267,6 +411,9 @@ internal class DownloadManager(
                 ).sendDownloadCancelledNotification()
             }
         }
+        schedulerMutex.withLock {
+            locallyScheduledWorkIds.remove(id)
+        }
         workManager.cancelUniqueWork(id.toString())
     }
 
@@ -276,9 +423,13 @@ internal class DownloadManager(
             downloadDao.update(
                 downloadEntity.copy(
                     userAction = UserAction.PAUSE.toString(),
+                    status = Status.PAUSED.toString(),
                     lastModified = System.currentTimeMillis()
                 )
             )
+        }
+        schedulerMutex.withLock {
+            locallyScheduledWorkIds.remove(id)
         }
         workManager.cancelUniqueWork(id.toString())
     }
@@ -303,7 +454,8 @@ internal class DownloadManager(
                     metaData = downloadEntity.metaData,
                     notificationParameter = downloadEntity.notificationParameter,
                     notificationTitle = downloadEntity.notificationTitle
-                )
+                ),
+                replaceExistingWork = true
             )
         }
     }

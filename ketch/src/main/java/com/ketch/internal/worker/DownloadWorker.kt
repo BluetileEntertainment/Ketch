@@ -92,14 +92,26 @@ internal class DownloadWorker(
                     it
                 )
             }
+            downloadDao.find(id)?.copy(
+                status = Status.STARTED.toString(),
+                failureReason = "",
+                lastModified = System.currentTimeMillis()
+            )?.let { downloadDao.update(it) }
 
-            val latestETag =
-                ApiResponseHeaderChecker(downloadRequest.url, downloadService, headers)
-                    .getHeaderValue(DownloadConst.ETAG_HEADER) ?: ""
+            setProgress(
+                workDataOf(
+                    DownloadConst.KEY_STATE to DownloadConst.STARTED
+                )
+            )
 
             val existingETag = downloadDao.find(id)?.eTag ?: ""
+            val latestETag =
+                runCatching {
+                    ApiResponseHeaderChecker(downloadRequest.url, downloadService, headers)
+                        .getHeaderValue(DownloadConst.ETAG_HEADER)
+                }.getOrNull()
 
-            if (latestETag != existingETag) {
+            if (!latestETag.isNullOrBlank() && latestETag != existingETag) {
                 FileUtil.deleteFileIfExists(path = dirPath, name = fileName)
                 downloadDao.find(id)?.copy(
                     eTag = latestETag,
@@ -202,8 +214,13 @@ internal class DownloadWorker(
             Result.success()
         } catch (e: Exception) {
             GlobalScope.launch {
+                val currentEntity = downloadDao.find(id)
+                if (e is CancellationException && currentEntity?.uuid != workerParameters.id.toString()) {
+                    return@launch
+                }
                 if (e is CancellationException) {
-                    if (downloadDao.find(id)?.userAction == UserAction.PAUSE.toString()) {
+                    val userAction = downloadDao.find(id)?.userAction
+                    if (userAction == UserAction.PAUSE.toString()) {
 
                         downloadDao.find(id)?.copy(
                             status = Status.PAUSED.toString(),
@@ -221,7 +238,7 @@ internal class DownloadWorker(
                             )
                         }
 
-                    } else {
+                    } else if (userAction == UserAction.CANCEL.toString()) {
 
                         downloadDao.find(id)?.copy(
                             status = Status.CANCELLED.toString(),
@@ -230,6 +247,13 @@ internal class DownloadWorker(
                         FileUtil.deleteFileIfExists(dirPath, fileName)
                         downloadNotificationManager?.sendDownloadCancelledNotification()
 
+                    } else {
+
+                        downloadDao.find(id)?.copy(
+                            status = Status.QUEUED.toString(),
+                            failureReason = "Waiting for network",
+                            lastModified = System.currentTimeMillis()
+                        )?.let { downloadDao.update(it) }
                     }
                 } else {
 
